@@ -1,0 +1,29 @@
+# Settings file in YAML
+# DO NOT RENAME THIS FILE
+
+# Year in YYYY format
+year: 2022
+
+# Month in mm format
+month: 11
+
+# List of holidays in this month
+# Enter an empty list in case of none
+Holidays: []
+
+# List of people that will be on the standby schedule
+# Should be at least two
+People:
+    - { Name: "Person 1",      # Person Name
+       idx: 0,                 # Person index, must be unique and sequential
+       week_restriction: [],   # Week restrictions (Days of the week a person can´t work). (0=Monday, 6=Sunday)
+       day_restriction: [],    # List of days a person cant work, useful for vacation
+       wanted_days: [] }       # A list of days a person wants to work
+
+
+# If someone worked last Saturday use this parameter with the person name
+last_saturday: ""
+# If someone worked last Saturday use this parameter with the person name
+last_sunday: ""
+
+
