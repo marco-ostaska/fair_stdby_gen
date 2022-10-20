@@ -1,9 +1,5 @@
-from operator import ge
-from random import random
 import yaml
 import calendar
-import random
-import numpy as np
 from tabulate import tabulate
 from yaml.loader import SafeLoader
 
