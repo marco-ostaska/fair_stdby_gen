@@ -1,18 +1,17 @@
-
 import unittest
 
-import configFile
-import People
-import Schedule
+from .. import configFile
+from .. import People
+from .. import Schedule
 
-CONFIG_FILE = 'config.yml'
+CONFIG_FILE = './src/tests/config.yml'
 YML = configFile.read_yaml_file(CONFIG_FILE)
 
 
 class TestConfigFile(unittest.TestCase):
 
     def test_can_read_file(self):
-        self.assertEqual(configFile.read_yaml_file("config.yml")["year"], 2022)
+        self.assertEqual(configFile.read_yaml_file(CONFIG_FILE)["year"], 2022)
 
 
 class TestSchedule(unittest.TestCase):
@@ -31,13 +30,13 @@ class TestSchedule(unittest.TestCase):
         agenda.set_days_person_must_work(person[1])
         self.assertEqual(agenda.month_assigned_days_by_name[3][3], "Regular_2")
 
-
     def test_set_first_saturday(self):
         person, _ = TestPeople().reset_data_for_tests(YML)
         agenda = TestSchedule.AGENDA
         agenda.set_first_saturday(person)
         i, j = agenda.get_calendar_indexes_for_this_day(5)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Regular_2")
+
 
 class TestPeople(unittest.TestCase):
 
