@@ -1,5 +1,7 @@
 # Fair StandBy On-Call Scheduler
 
+[![test](https://github.com/marco-ostaska/fair_stdby_gen/actions/workflows/test.yml/badge.svg)](https://github.com/marco-ostaska/fair_stdby_gen/actions/workflows/test.yml)
+
 Fair StandBy on-Call Scheduler is a python script that aims to create a fair on-call table using a set of rules:
 
 ## Rules
