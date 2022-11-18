@@ -37,11 +37,13 @@ class TestSchedule(unittest.TestCase):
         i, j = agenda.get_calendar_indexes_for_this_day(5)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Regular_2")
 
-    def test_has_worked_on_last_saturday(self):
+    def test_has_worked_on_saturdays_ago(self):
         person, _ = TestPeople().reset_data_for_tests(YML)
         agenda = TestSchedule.AGENDA
         agenda.set_first_saturday(person)
-        self.assertTrue(agenda.has_worked_on_last_saturday(12, person))
+        self.assertFalse(agenda.has_worked_on_saturdays_ago(person,5,agenda.ONE_WEEK_AGO))
+        self.assertTrue(agenda.has_worked_on_saturdays_ago(person,12,agenda.ONE_WEEK_AGO))
+        self.assertFalse(agenda.has_worked_on_saturdays_ago(person, 12, agenda.TWO_WEEKS_AGO))
 
 
 class TestPeople(unittest.TestCase):

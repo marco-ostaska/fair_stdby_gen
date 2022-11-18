@@ -1,6 +1,5 @@
 from monthinfo.monthinfo import CurrentMonth
 
-
 class Monday(CurrentMonth):
     pass
 
@@ -33,13 +32,11 @@ class Saturday(CurrentMonth):
                 self.month_assigned_days_by_id[i][j] = person.id
                 self.month_assigned_days_by_name[i][j] = person.name
 
-    def has_worked_on_last_saturday(self, day, person):
-        if self.is_saturday(day) and not self.is_first_saturday(day):
-            week, day = self.get_calendar_indexes_for_this_day(day - 7)
+    def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
+        if not self.is_first_saturday(current_day) and (current_day - days_ago)>=0 :
+            week, day = self.get_calendar_indexes_for_this_day(current_day - days_ago)
             return self.month_assigned_days_by_id[week][day] == person.id
-
         return False
-
 
 
 class Sunday(CurrentMonth):
@@ -52,6 +49,10 @@ class WeekendRules(Saturday, Sunday):
 
 class Agenda(WeekRules, WeekendRules):
     SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY = range(7)
+
+    ONE_WEEK_AGO = 7
+    TWO_WEEKS_AGO = ONE_WEEK_AGO*2
+    THREE_WEEKS_AGO = ONE_WEEK_AGO*3
 
     def __init__(self, year, month, allow_hours, first_weekend):
         super().__init__(month, year, 5)
