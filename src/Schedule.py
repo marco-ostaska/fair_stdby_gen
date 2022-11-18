@@ -27,11 +27,11 @@ class WeekRules(Monday, Tuesday, Wednesday, Thursday, Friday):
 
 class Saturday(CurrentMonth):
     def set_first_saturday(self, person):
-        for d in self.list_of_days():
-            if self.is_first_saturday(d) and person.has_to_work_on_first_saturday:
-                i, j = self.get_calendar_indexes_for_this_day(d)
-                self.month_assigned_days_by_id[i][j] = person.id
-                self.month_assigned_days_by_name[i][j] = person.name
+        week, day = self.get_calendar_indexes_for_this_day(
+            self.list_of_saturdays()[0])
+        if person.has_to_work_on_first_saturday(self):
+            self.month_assigned_days_by_id[week][day] = person.id
+            self.month_assigned_days_by_name[week][day] = person.name
 
     def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
         if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
