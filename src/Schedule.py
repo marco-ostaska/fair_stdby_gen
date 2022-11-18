@@ -1,5 +1,6 @@
 from monthinfo.monthinfo import CurrentMonth
 
+
 class Monday(CurrentMonth):
     pass
 
@@ -33,18 +34,33 @@ class Saturday(CurrentMonth):
                 self.month_assigned_days_by_name[i][j] = person.name
 
     def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
-        if not self.is_first_saturday(current_day) and (current_day - days_ago)>=0 :
-            week, day = self.get_calendar_indexes_for_this_day(current_day - days_ago)
+        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
+            week, day = self.get_calendar_indexes_for_this_day(
+                current_day - days_ago)
             return self.month_assigned_days_by_id[week][day] == person.id
         return False
 
 
 class Sunday(CurrentMonth):
-    pass
+    def set_first_sunday(self, person):
+        week, day = self.get_calendar_indexes_for_this_day(
+            self.list_of_sundays()[0])
+        if person.has_to_work_on_first_sunday(self):
+            self.month_assigned_days_by_id[week][day] = person.id
+            self.month_assigned_days_by_name[week][day] = person.name
+
+    def has_worked_on_sundays_ago(self, person, current_day, days_ago):
+        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
+            week, day = self.get_calendar_indexes_for_this_day(
+                current_day - days_ago)
+            return self.month_assigned_days_by_id[week][day] == person.id
+        return False
 
 
 class WeekendRules(Saturday, Sunday):
-    pass
+    def set_first_weekend(self, person):
+        self.set_first_saturday(person)
+        self.set_first_sunday(person)
 
 
 class Agenda(WeekRules, WeekendRules):
