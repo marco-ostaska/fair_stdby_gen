@@ -55,6 +55,11 @@ class Person():
         return self.number_of_regular_days_worked() + self.number_of_weekends_holidays_worked()
 
 
+def (people):
+    sp = sorted(people, key=lambda person: person.total_of_worked_hours())
+
+    return [people.index(p) for p in sp if p.regular]
+
 def init_person_obj(yml):
     return [Person(p["name"], p["id"], p["week_restriction"],
                    p["day_restriction"], p["days_to_work"],

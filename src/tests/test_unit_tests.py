@@ -110,6 +110,14 @@ class TestPeople(unittest.TestCase):
         self.test_number_of_regular_days_worked()
         self.test_number_of_worked_days()
 
+    def test_sort_list_index_by_hours_for_regular_person(self):
+        person = People.init_person_obj(YML)
+        person[1].regular_worked_hours = 15
+        person[0].hours_worked_on_weekends_holidays = 24
+
+        self.assertEqual(
+            People.sort_list_index_by_hours_for_regular_person(person), [1, 0])
+
 
 if __name__ == '__main__':
     unittest.main()
