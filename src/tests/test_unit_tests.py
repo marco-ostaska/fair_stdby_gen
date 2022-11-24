@@ -6,7 +6,6 @@ from .. import Schedule
 
 
 CONFIG_FILE = './src/tests/config_5_people.yml'
-CONFIG_FILE_3_PEOPLE = './src/tests/config_3_people.yml'
 YML = configFile.read_yaml_file(CONFIG_FILE)
 
 

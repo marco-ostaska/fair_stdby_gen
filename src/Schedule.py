@@ -21,7 +21,7 @@ class Friday(CurrentMonth):
     pass
 
 
-class WeekRules(Monday, Tuesday, Wednesday, Thursday, Friday):
+class Week(Monday, Tuesday, Wednesday, Thursday, Friday):
     pass
 
 
@@ -30,7 +30,6 @@ class Saturday(CurrentMonth):
         if person.has_to_work_on_first_saturday(self):
             self.set_month_assigned_days(
                 person=person, day=self.list_of_saturdays()[0])
-
 
     def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
         if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
@@ -53,13 +52,13 @@ class Sunday(CurrentMonth):
         return False
 
 
-class WeekendRules(Saturday, Sunday):
+class Weekend(Saturday, Sunday):
     def set_first_weekend(self, person):
         self.set_first_saturday(person)
         self.set_first_sunday(person)
 
 
-class Agenda(WeekRules, WeekendRules):
+class Agenda(Week, Weekend):
     SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY = range(7)
 
     ONE_WEEK_AGO = 7
