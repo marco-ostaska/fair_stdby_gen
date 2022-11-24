@@ -1,63 +1,7 @@
 from monthinfo.monthinfo import CurrentMonth
 
-class Monday(CurrentMonth):
-    pass
 
-
-class Tuesday(CurrentMonth):
-    pass
-
-
-class Wednesday(CurrentMonth):
-    pass
-
-
-class Thursday(CurrentMonth):
-    pass
-
-
-class Friday(CurrentMonth):
-    pass
-
-class Saturday(CurrentMonth):
-    def set_first_saturday(self, person):
-        if person.has_to_work_on_first_saturday(self):
-            self.set_month_assigned_days(
-                person=person, day=self.list_of_saturdays()[0])
-
-    def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
-        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
-            week, day = self.get_calendar_indexes_for_this_day(
-                current_day - days_ago)
-            return self.month_assigned_days_by_id[week][day] == person.id
-        return False
-
-
-class Sunday(CurrentMonth):
-    def set_first_sunday(self, person):
-        if person.has_to_work_on_first_sunday(self):
-            self.set_month_assigned_days(person=person,day=self.list_of_sundays()[0])
-
-    def has_worked_on_sundays_ago(self, person, current_day, days_ago):
-        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
-            week, day = self.get_calendar_indexes_for_this_day(
-                current_day - days_ago)
-            return self.month_assigned_days_by_id[week][day] == person.id
-        return False
-
-class Week(Monday, Tuesday, Wednesday, Thursday, Friday):
-    pass
-
-
-
-
-class Weekend(Saturday, Sunday):
-    def set_first_weekend(self, person):
-        self.set_first_saturday(person)
-        self.set_first_sunday(person)
-
-
-class Agenda(Week, Weekend):
+class Agenda(CurrentMonth):
     SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY = range(7)
 
     ONE_WEEK = 7
@@ -87,6 +31,38 @@ class Agenda(Week, Weekend):
         for day in self.list_of_days():
             if person.has_to_work_today(day):
                 self.set_month_assigned_days(day, person)
+
+    #saturdays
+    def set_first_saturday(self, person):
+        if person.has_to_work_on_first_saturday(self):
+            self.set_month_assigned_days(
+                person=person, day=self.list_of_saturdays()[0])
+
+    def has_worked_on_saturdays_ago(self, person, current_day, days_ago):
+        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
+            week, day = self.get_calendar_indexes_for_this_day(
+                current_day - days_ago)
+            return self.month_assigned_days_by_id[week][day] == person.id
+        return False
+
+    # sundays
+    def set_first_sunday(self, person):
+        if person.has_to_work_on_first_sunday(self):
+            self.set_month_assigned_days(
+                person=person, day=self.list_of_sundays()[0])
+
+    def has_worked_on_sundays_ago(self, person, current_day, days_ago):
+        if not self.is_first_saturday(current_day) and (current_day - days_ago) >= 0:
+            week, day = self.get_calendar_indexes_for_this_day(
+                current_day - days_ago)
+            return self.month_assigned_days_by_id[week][day] == person.id
+        return False
+
+    #weekends
+    def set_first_weekend(self, person):
+        self.set_first_saturday(person)
+        self.set_first_sunday(person)
+
 
 
 def init_agenda_obj(yml):
