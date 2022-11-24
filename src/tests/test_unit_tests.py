@@ -108,6 +108,11 @@ class TestPeople(unittest.TestCase):
         agenda.first_weekend["saturday"] = "Person_1"
         self.assertFalse(person.has_to_work_on_first_saturday(agenda))
 
+    def test_has_reached_number_of_hours(self):
+        person, agenda = self.reset_data_for_tests(YML)
+        person.regular_worked_hours = 200
+        self.assertTrue(person.has_reached_number_of_hours(agenda))
+
     def test_has_to_work_on_first_sunday(self):
         person, agenda = self.reset_data_for_tests(YML)
         agenda.first_weekend["sunday"] = "Person_2"

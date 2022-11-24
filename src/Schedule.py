@@ -1,7 +1,7 @@
 from monthinfo.monthinfo import CurrentMonth
 
 
-class Agenda():
+class Agenda(object):
     SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY = range(7)
 
     ONE_WEEK = 7
@@ -62,6 +62,8 @@ class Agenda():
     def set_first_weekend(self, person):
         self.set_first_saturday(person)
         self.set_first_sunday(person)
+
+
 
 
 

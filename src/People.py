@@ -1,4 +1,4 @@
-class Person():
+class Person(object):
 
     hours_worked_on_weekends_holidays = 0
     regular_worked_hours = 0
@@ -19,6 +19,9 @@ class Person():
 
     def has_to_work_on_first_sunday(self, agenda) -> bool:
         return agenda.first_weekend["sunday"] == self.name
+
+    def has_reached_number_of_hours(self, agenda) -> bool:
+        return self.total_of_worked_hours() >= agenda.hours["allowed"]
 
     def is_holiday(self, day):
         return day in self.holidays
