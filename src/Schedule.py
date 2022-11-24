@@ -1,6 +1,5 @@
 from monthinfo.monthinfo import CurrentMonth
 
-
 class Monday(CurrentMonth):
     pass
 
@@ -19,11 +18,6 @@ class Thursday(CurrentMonth):
 
 class Friday(CurrentMonth):
     pass
-
-
-class Week(Monday, Tuesday, Wednesday, Thursday, Friday):
-    pass
-
 
 class Saturday(CurrentMonth):
     def set_first_saturday(self, person):
@@ -51,6 +45,11 @@ class Sunday(CurrentMonth):
             return self.month_assigned_days_by_id[week][day] == person.id
         return False
 
+class Week(Monday, Tuesday, Wednesday, Thursday, Friday):
+    pass
+
+
+
 
 class Weekend(Saturday, Sunday):
     def set_first_weekend(self, person):
@@ -61,9 +60,9 @@ class Weekend(Saturday, Sunday):
 class Agenda(Week, Weekend):
     SATURDAY, SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY = range(7)
 
-    ONE_WEEK_AGO = 7
-    TWO_WEEKS_AGO = ONE_WEEK_AGO*2
-    THREE_WEEKS_AGO = ONE_WEEK_AGO*3
+    ONE_WEEK = 7
+    TWO_WEEKS = ONE_WEEK*2
+    THREE_WEEKS = ONE_WEEK*3
 
     def __init__(self, year, month, hours, first_weekend):
         super().__init__(month, year, 5)

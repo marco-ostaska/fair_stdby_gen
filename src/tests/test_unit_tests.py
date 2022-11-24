@@ -80,11 +80,11 @@ class TestSchedule(unittest.TestCase):
         agenda.first_weekend["sunday"] = "Person_3"
         agenda.set_first_sunday(person)
         self.assertFalse(agenda.has_worked_on_sundays_ago(
-            person, 6, agenda.ONE_WEEK_AGO))
+            person, 6, agenda.ONE_WEEK))
         self.assertTrue(agenda.has_worked_on_sundays_ago(
-            person, 13, agenda.ONE_WEEK_AGO))
+            person, 13, agenda.ONE_WEEK))
         self.assertFalse(agenda.has_worked_on_sundays_ago(
-            person, 13, agenda.TWO_WEEKS_AGO))
+            person, 13, agenda.TWO_WEEKS))
 
 
 class TestPeople(unittest.TestCase):
