@@ -25,11 +25,11 @@ class Person():
 
     def sum_weekends_holidays_worked_hours(self, agenda, current_day):
         if self.is_holiday(current_day) or agenda.is_weekend(current_day):
-            self.hours_worked_on_weekends_holidays += 24
+            self.hours_worked_on_weekends_holidays += agenda.hours["weekend_holidays"]
 
     def sum_regular_worked_hours(self, agenda, current_day):
         if not self.is_holiday(current_day) and not agenda.is_weekend(current_day):
-            self.regular_worked_hours += 15
+            self.regular_worked_hours += agenda.hours["regular"]
 
     def sum_worked_days(self, agenda):
         for d in agenda.list_of_days():
