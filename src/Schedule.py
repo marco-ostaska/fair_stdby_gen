@@ -66,11 +66,11 @@ class Agenda(WeekRules, WeekendRules):
     TWO_WEEKS_AGO = ONE_WEEK_AGO*2
     THREE_WEEKS_AGO = ONE_WEEK_AGO*3
 
-    def __init__(self, year, month, allow_hours, first_weekend):
+    def __init__(self, year, month, hours, first_weekend):
         super().__init__(month, year, 5)
         self.year = year
         self.month = month
-        self.allow_hours = allow_hours
+        self.hours = hours
         self.first_weekend = first_weekend
         self.month_calendar = self.calendar()
         self.month_assigned_days_by_id = self.blank_month_calendar()
@@ -92,4 +92,4 @@ class Agenda(WeekRules, WeekendRules):
 
 
 def init_agenda_obj(yml):
-    return Agenda(yml["year"], yml["month"], yml["allow_hours"], yml["first_weekend"])
+    return Agenda(yml["year"], yml["month"], yml["hours"], yml["first_weekend"])

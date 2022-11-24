@@ -4,7 +4,9 @@ from .. import configFile
 from .. import People
 from .. import Schedule
 
-CONFIG_FILE = './src/tests/config.yml'
+
+CONFIG_FILE = './src/tests/config_5_people.yml'
+CONFIG_FILE_3_PEOPLE = './src/tests/config_3_people.yml'
 YML = configFile.read_yaml_file(CONFIG_FILE)
 
 
@@ -28,38 +30,38 @@ class TestSchedule(unittest.TestCase):
         agenda = TestSchedule.AGENDA
         person = People.init_person_obj(YML)
         agenda.set_days_person_must_work(person[1])
-        self.assertEqual(agenda.month_assigned_days_by_name[3][3], "Regular_2")
+        self.assertEqual(agenda.month_assigned_days_by_name[3][3], "Person_2")
 
     def test_set_first_saturday(self):
         person, _ = TestPeople().reset_data_for_tests(YML)
         agenda = TestSchedule.AGENDA
-        agenda.first_weekend["saturday"] = "Regular_2"
+        agenda.first_weekend["saturday"] = "Person_2"
         agenda.set_first_saturday(person)
         i, j = agenda.get_calendar_indexes_for_this_day(5)
-        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Regular_2")
+        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_2")
 
     def test_set_first_sunday(self):
         person, _ = People.init_person_obj(
             YML)[2], Schedule.init_agenda_obj(YML)
         agenda = TestSchedule.AGENDA
-        agenda.first_weekend["sunday"] = "Backup_1"
+        agenda.first_weekend["sunday"] = "Person_3"
         agenda.set_first_sunday(person)
         i, j = agenda.get_calendar_indexes_for_this_day(6)
-        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Backup_1")
+        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_3")
 
     def test_set_first_weekend(self):
         person, _ = People.init_person_obj(YML), Schedule.init_agenda_obj(YML)
         agenda = TestSchedule.AGENDA
-        agenda.first_weekend["sunday"] = "Backup_1"
-        agenda.first_weekend["saturday"] = "Regular_2"
+        agenda.first_weekend["sunday"] = "Person_3"
+        agenda.first_weekend["saturday"] = "Person_2"
         agenda.set_first_weekend(person[2])
         agenda.set_first_weekend(person[1])
-        self.assertEqual(agenda.first_weekend["sunday"], "Backup_1")
+        self.assertEqual(agenda.first_weekend["sunday"], "Person_3")
         i, j = agenda.get_calendar_indexes_for_this_day(6)
-        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Backup_1")
+        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_3")
         i, j = agenda.get_calendar_indexes_for_this_day(5)
         self.assertEqual(agenda.month_calendar[i][j], 5)
-        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Regular_2")
+        self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_2")
 
     # def test_has_worked_on_saturdays_ago(self):
     #     person, _ = TestPeople().reset_data_for_tests(YML)
@@ -76,7 +78,7 @@ class TestSchedule(unittest.TestCase):
         person, _ = People.init_person_obj(
             YML)[2], Schedule.init_agenda_obj(YML)
         agenda = TestSchedule.AGENDA
-        agenda.first_weekend["sunday"] = "Backup_1"
+        agenda.first_weekend["sunday"] = "Person_3"
         agenda.set_first_sunday(person)
         self.assertFalse(agenda.has_worked_on_sundays_ago(
             person, 6, agenda.ONE_WEEK_AGO))
@@ -93,7 +95,7 @@ class TestPeople(unittest.TestCase):
 
     def test_can_init_person_obj(self):
         person = People.init_person_obj(YML)
-        self.assertEqual(person[0].name, "Regular_1")
+        self.assertEqual(person[0].name, "Person_1")
 
     def test_person_has_to_work_today(self):
         person, _ = self.reset_data_for_tests(YML)
@@ -102,16 +104,16 @@ class TestPeople(unittest.TestCase):
 
     def test_has_to_work_on_first_saturday(self):
         person, agenda = self.reset_data_for_tests(YML)
-        agenda.first_weekend["saturday"] = "Regular_2"
+        agenda.first_weekend["saturday"] = "Person_2"
         self.assertTrue(person.has_to_work_on_first_saturday(agenda))
-        agenda.first_weekend["saturday"] = "Regular_1"
+        agenda.first_weekend["saturday"] = "Person_1"
         self.assertFalse(person.has_to_work_on_first_saturday(agenda))
 
     def test_has_to_work_on_first_sunday(self):
         person, agenda = self.reset_data_for_tests(YML)
-        agenda.first_weekend["sunday"] = "Regular_2"
+        agenda.first_weekend["sunday"] = "Person_2"
         self.assertTrue(person.has_to_work_on_first_sunday(agenda))
-        agenda.first_weekend["sunday"] = "Regular_1"
+        agenda.first_weekend["sunday"] = "Person_1"
         self.assertFalse(person.has_to_work_on_first_sunday(agenda))
 
     def test_is_holiday(self):
@@ -167,11 +169,7 @@ class TestPeople(unittest.TestCase):
         person[4].hours_worked_on_weekends_holidays = 24
 
         self.assertEqual(
-            People.sort_list_index_by_hours(person)["regular"], [1, 0])
-
-        self.assertEqual(
-            People.sort_list_index_by_hours(person)["backup"], [2, 4, 3])
-
+            People.sort_list_index_by_hours(person), [1, 0, 2, 4, 3])
 
 if __name__ == '__main__':
     unittest.main()

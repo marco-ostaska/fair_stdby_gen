@@ -3,14 +3,13 @@ class Person():
     hours_worked_on_weekends_holidays = 0
     regular_worked_hours = 0
 
-    def __init__(self, name, id, week_restriction, day_restriction, days_to_work, holidays, regular):
+    def __init__(self, name, id, week_restriction, day_restriction, days_to_work, holidays):
         self.name = name
         self.id = id
         self.week_restriction = week_restriction
         self.day_restriction = day_restriction
         self.days_to_work = days_to_work
         self.holidays = holidays
-        self.regular = regular
 
     def has_to_work_today(self, current_month_day) -> bool:
         return current_month_day in self.days_to_work
@@ -57,12 +56,11 @@ class Person():
 
 def sort_list_index_by_hours(people):
     sp = sorted(people, key=lambda person: person.total_of_worked_hours())
-    regular = [people.index(p) for p in sp if p.regular]
-    backup =  [people.index(p) for p in sp if not p.regular]
-    return { "regular": regular, "backup": backup}
+    return [people.index(p) for p in sp]
+
 
 
 def init_person_obj(yml):
     return [Person(p["name"], p["id"], p["week_restriction"],
                    p["day_restriction"], p["days_to_work"],
-                   p["holidays"], p["regular"]) for p in yml["person"]]
+                   p["holidays"]) for p in yml["person"]]
