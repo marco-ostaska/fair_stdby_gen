@@ -1,3 +1,47 @@
+# Person
+# bools:
+# - has_to_work_today?
+# - has_to_work_first_saturday?
+# - has_to_work_first_sunday?
+# - has_reached_number_of_hours?
+# - has_holiday_today?
+# - has_worked_on_last_saturday
+# - has_worked_on_last_sunday
+# - can_work_this_saturday
+# - can_work_this_sunday
+# - can_work_this_monday
+
+# get
+# number_of_worked_days
+# number_of_regular_days_worked
+# number_of_non_regular_days_worked
+# saturdays_worked
+# mondays_worked ....
+
+
+
+# set
+# sum_non_regular_hours
+# sum_regular_hours
+# sum_worked_days
+# sort_list_index_by_hours
+
+
+# Rules
+
+# saturday
+# Person can not work two saturdays in a row
+# person can not work on saturday if already worked on friday
+
+
+# sunday
+# Person can not work two sundays in a row
+# person can not work on sunday if already worked on saturday
+
+# monday
+# person can not work on monday if already worked on weekend
+
+
 class Person(object):
 
     hours_worked_on_weekends_holidays = 0
