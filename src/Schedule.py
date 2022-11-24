@@ -15,10 +15,10 @@ class Agenda(object):
         self.hours = hours
         self.first_weekend = first_weekend
         self.month_calendar = self.current_month.calendar()
-        self.month_assigned_days_by_id = self.blank_month_calendar()
-        self.month_assigned_days_by_name = self.blank_month_calendar()
+        self.month_assigned_days_by_id = self.blank_calendar()
+        self.month_assigned_days_by_name = self.blank_calendar()
 
-    def blank_month_calendar(self):
+    def blank_calendar(self):
         return [
             [None]*7 for _ in range(len(self.month_calendar))]
 
