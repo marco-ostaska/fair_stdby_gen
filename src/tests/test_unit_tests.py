@@ -36,7 +36,7 @@ class TestSchedule(unittest.TestCase):
         agenda = TestSchedule.AGENDA
         agenda.first_weekend["saturday"] = "Person_2"
         agenda.set_first_saturday(person)
-        i, j = agenda.get_calendar_indexes_for_this_day(5)
+        i, j = agenda.current_month.get_calendar_indexes_for_this_day(5)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_2")
 
     def test_set_first_sunday(self):
@@ -45,7 +45,7 @@ class TestSchedule(unittest.TestCase):
         agenda = TestSchedule.AGENDA
         agenda.first_weekend["sunday"] = "Person_3"
         agenda.set_first_sunday(person)
-        i, j = agenda.get_calendar_indexes_for_this_day(6)
+        i, j = agenda.current_month.get_calendar_indexes_for_this_day(6)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_3")
 
     def test_set_first_weekend(self):
@@ -56,9 +56,9 @@ class TestSchedule(unittest.TestCase):
         agenda.set_first_weekend(person[2])
         agenda.set_first_weekend(person[1])
         self.assertEqual(agenda.first_weekend["sunday"], "Person_3")
-        i, j = agenda.get_calendar_indexes_for_this_day(6)
+        i, j = agenda.current_month.get_calendar_indexes_for_this_day(6)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_3")
-        i, j = agenda.get_calendar_indexes_for_this_day(5)
+        i, j = agenda.current_month.get_calendar_indexes_for_this_day(5)
         self.assertEqual(agenda.month_calendar[i][j], 5)
         self.assertEqual(agenda.month_assigned_days_by_name[i][j], "Person_2")
 

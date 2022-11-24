@@ -24,16 +24,16 @@ class Person():
         return day in self.holidays
 
     def sum_weekends_holidays_worked_hours(self, agenda, current_day):
-        if self.is_holiday(current_day) or agenda.is_weekend(current_day):
+        if self.is_holiday(current_day) or agenda.current_month.is_weekend(current_day):
             self.hours_worked_on_weekends_holidays += agenda.hours["weekend_holidays"]
 
     def sum_regular_worked_hours(self, agenda, current_day):
-        if not self.is_holiday(current_day) and not agenda.is_weekend(current_day):
+        if not self.is_holiday(current_day) and not agenda.current_month.is_weekend(current_day):
             self.regular_worked_hours += agenda.hours["regular"]
 
     def sum_worked_days(self, agenda):
-        for d in agenda.list_of_days():
-            i, j = agenda.get_calendar_indexes_for_this_day(d)
+        for d in agenda.current_month.list_of_days():
+            i, j = agenda.current_month.get_calendar_indexes_for_this_day(d)
 
             if agenda.month_assigned_days_by_name[i][j] == self.name:
                 self.sum_weekends_holidays_worked_hours(
