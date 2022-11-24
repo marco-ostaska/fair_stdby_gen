@@ -104,21 +104,21 @@ class TestPeople(unittest.TestCase):
     def test_has_to_work_on_first_saturday(self):
         person, agenda = self.reset_data_for_tests(YML)
         agenda.first_weekend["saturday"] = "Person_2"
-        self.assertTrue(person.has_to_work_on_first_saturday(agenda))
+        self.assertTrue(person.has_to_work_on_first_saturday(agenda.first_weekend["saturday"]))
         agenda.first_weekend["saturday"] = "Person_1"
-        self.assertFalse(person.has_to_work_on_first_saturday(agenda))
+        self.assertFalse(person.has_to_work_on_first_saturday(agenda.first_weekend["saturday"]))
 
     def test_has_reached_number_of_hours(self):
         person, agenda = self.reset_data_for_tests(YML)
         person.regular_worked_hours = 200
-        self.assertTrue(person.has_reached_number_of_hours(agenda))
+        self.assertTrue(person.has_reached_number_of_hours(agenda.hours["allowed"]))
 
     def test_has_to_work_on_first_sunday(self):
         person, agenda = self.reset_data_for_tests(YML)
         agenda.first_weekend["sunday"] = "Person_2"
-        self.assertTrue(person.has_to_work_on_first_sunday(agenda))
+        self.assertTrue(person.has_to_work_on_first_sunday(agenda.first_weekend["sunday"]))
         agenda.first_weekend["sunday"] = "Person_1"
-        self.assertFalse(person.has_to_work_on_first_sunday(agenda))
+        self.assertFalse(person.has_to_work_on_first_sunday(agenda.first_weekend["sunday"]))
 
     def test_is_holiday(self):
         person, _ = self.reset_data_for_tests(YML)

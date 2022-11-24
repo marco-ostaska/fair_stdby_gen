@@ -34,7 +34,7 @@ class Agenda(object):
 
     #saturdays
     def set_first_saturday(self, person):
-        if person.has_to_work_on_first_saturday(self):
+        if person.has_to_work_on_first_saturday(self.first_weekend["saturday"]):
             self.set_month_assigned_days(
                 person=person, day=self.current_month.list_of_saturdays()[0])
 
@@ -47,7 +47,7 @@ class Agenda(object):
 
     # sundays
     def set_first_sunday(self, person):
-        if person.has_to_work_on_first_sunday(self):
+        if person.has_to_work_on_first_sunday(self.first_weekend["sunday"]):
             self.set_month_assigned_days(
                 person=person, day=self.current_month.list_of_sundays()[0])
 

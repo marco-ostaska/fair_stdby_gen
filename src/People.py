@@ -14,14 +14,14 @@ class Person(object):
     def has_to_work_today(self, current_month_day) -> bool:
         return current_month_day in self.days_to_work
 
-    def has_to_work_on_first_saturday(self, agenda) -> bool:
-        return agenda.first_weekend["saturday"] == self.name
+    def has_to_work_on_first_saturday(self, designated_name) -> bool:
+        return designated_name == self.name
 
-    def has_to_work_on_first_sunday(self, agenda) -> bool:
-        return agenda.first_weekend["sunday"] == self.name
+    def has_to_work_on_first_sunday(self, designated_name) -> bool:
+        return designated_name== self.name
 
-    def has_reached_number_of_hours(self, agenda) -> bool:
-        return self.total_of_worked_hours() >= agenda.hours["allowed"]
+    def has_reached_number_of_hours(self, hours_allowed) -> bool:
+        return self.total_of_worked_hours() >= hours_allowed
 
     def is_holiday(self, day):
         return day in self.holidays
