@@ -56,9 +56,19 @@ YML_DICT = {
 }
 
 
+def add_worked_hours_helper(func, days, hours_to_sum):
+    total = 0
+    for _ in range(days):
+        func()
+        total += hours_to_sum
+    return total
+
+
 class Test_WorkdayChecker(unittest.TestCase):
     def setUp(self):
-        self.mock_person = stdbygen.Person("John Doe", [20, 30], [3, 2])
+        holiday = stdbygen.Holidays([25,26], 24)
+        self.mock_person = stdbygen.Person(
+            "John Doe", [20, 30], [3, 2], holiday)
 
     def test_is_required(self):
         self.assertTrue(self.mock_person.is_required(20))
@@ -67,3 +77,28 @@ class Test_WorkdayChecker(unittest.TestCase):
     def test_is_restricted(self):
         self.assertTrue(self.mock_person.is_restricted(3))
         self.assertFalse(self.mock_person.is_restricted(4))
+
+
+class TEST_Holidays(unittest.TestCase):
+    def setUp(self):
+        holiday = stdbygen.Holidays([25,26], 24)
+        self.mock_person = stdbygen.Person(
+            "John Doe", [20, 30], [3, 2], holiday)
+
+    def test_is_on(self):
+        self.assertTrue(self.mock_person.holiday.is_on(25))
+        self.assertFalse(self.mock_person.holiday.is_on(27))
+
+    def add_worked_hours_holiday(self):
+        self.worked_hours += self.hours
+
+    def test_add_worked_hours_holiday(self):
+        self.mock_person.holiday.worked_hours = 0
+        total = add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 2, 24)
+        self.assertEqual(self.mock_person.holiday.worked_hours, total)
+
+    def test_worked_days_holiday(self):
+        self.mock_person.holiday.worked_hours = 0
+        self.assertEqual(self.mock_person.holiday.worked_days(), 0)
+        add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 20, 24)
+        self.assertEqual(self.mock_person.holiday.worked_days(), 20)
