@@ -160,3 +160,14 @@ class Test_Person(MockTests):
             self.mock_person.week.add_worked_hours, 14, 15)
         add_worked_hours_helper(self.mock_person.weekend.add_worked_hours, 4, 24)
         self.assertEqual(self.mock_person.worked_days(), 20)
+
+    def test_total_worked_hours(self):
+        self.mock_person.holiday.worked_hours = 0
+        self.mock_person.week.worked_hours = 0
+        self.mock_person.weekend.worked_hours = 0
+        self.assertEqual(self.mock_person.worked_hours(), 0)
+        add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 2, 24)
+        add_worked_hours_helper(
+            self.mock_person.week.add_worked_hours, 14, 15)
+        add_worked_hours_helper(self.mock_person.weekend.add_worked_hours, 4, 24)
+        self.assertEqual(self.mock_person.worked_hours(), 354)
