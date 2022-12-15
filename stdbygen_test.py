@@ -67,8 +67,9 @@ def add_worked_hours_helper(func, days, hours_to_sum):
 class Test_WorkdayChecker(unittest.TestCase):
     def setUp(self):
         holiday = stdbygen.Holidays([25,26], 24)
+        week = stdbygen.new_week([], 15)
         self.mock_person = stdbygen.Person(
-            "John Doe", [20, 30], [3, 2], holiday)
+            "John Doe", [20, 30], [3, 2], holiday, week)
 
     def test_is_required(self):
         self.assertTrue(self.mock_person.is_required(20))
@@ -78,12 +79,22 @@ class Test_WorkdayChecker(unittest.TestCase):
         self.assertTrue(self.mock_person.is_restricted(3))
         self.assertFalse(self.mock_person.is_restricted(4))
 
+class TEST_HoursCalculator(unittest.TestCase):
+
+    def test_add_worked_hours(self):
+        hour_calc = stdbygen.HoursCalculator(186, 15, 24, 24)
+        hour_calc.hours = 24
+        total = add_worked_hours_helper(hour_calc.add_worked_hours, 2, 24)
+        self.assertEqual(hour_calc.worked_hours, total)
+
+
 
 class TEST_Holidays(unittest.TestCase):
     def setUp(self):
-        holiday = stdbygen.Holidays([25,26], 24)
+        holiday = stdbygen.new_holiday([25, 26], 24)
+        week = stdbygen.new_week(["Mon", "Fri"], 15)
         self.mock_person = stdbygen.Person(
-            "John Doe", [20, 30], [3, 2], holiday)
+            "John Doe", [20, 30], [3, 2], holiday, week)
 
     def test_is_on(self):
         self.assertTrue(self.mock_person.holiday.is_on(25))
@@ -102,3 +113,14 @@ class TEST_Holidays(unittest.TestCase):
         self.assertEqual(self.mock_person.holiday.worked_days(), 0)
         add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 20, 24)
         self.assertEqual(self.mock_person.holiday.worked_days(), 20)
+
+class TEST_Weeks(unittest.TestCase):
+    def setUp(self):
+        holiday = stdbygen.new_holiday([25, 26], 24)
+        week = stdbygen.new_week(["Mon", "Fri"], 15)
+        self.mock_person = stdbygen.Person(
+            "John Doe", [20, 30], [3, 2], holiday, week)
+
+    def test_is_restricted(self):
+        self.assertTrue(self.mock_person.week.is_restricted("Fri"))
+        self.assertFalse(self.mock_person.week.is_restricted("Thu"))
