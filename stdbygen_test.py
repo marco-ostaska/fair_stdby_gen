@@ -64,13 +64,17 @@ def add_worked_hours_helper(func, days, hours_to_sum):
     return total
 
 
-class Test_WorkdayChecker(unittest.TestCase):
-    def setUp(self):
-        holiday = stdbygen.Holidays([25,26], 24)
-        week = stdbygen.new_week([], 15)
-        self.mock_person = stdbygen.Person(
-            "John Doe", [20, 30], [3, 2], holiday, week)
+class MockTests(unittest.TestCase):
 
+    def setUp(self):
+        holiday = stdbygen.new_holiday([25, 26], 24)
+        week = stdbygen.new_week(["Mon", "Fri"], 15)
+        weekend = stdbygen.new_weekend(
+            {"saturday": "John Doe", "sunday": "Jane Doe"}, 24)
+        self.mock_person = stdbygen.Person(
+            "John Doe", [20, 30], [3, 2], holiday, week, weekend)
+
+class Test_WorkdayValidator(MockTests):
     def test_is_required(self):
         self.assertTrue(self.mock_person.is_required(20))
         self.assertFalse(self.mock_person.is_required(25))
@@ -82,19 +86,13 @@ class Test_WorkdayChecker(unittest.TestCase):
 class TEST_HoursCalculator(unittest.TestCase):
 
     def test_add_worked_hours(self):
-        hour_calc = stdbygen.HoursCalculator(186, 15, 24, 24)
+        hour_calc = stdbygen.HoursCalculator(186)
         hour_calc.hours = 24
         total = add_worked_hours_helper(hour_calc.add_worked_hours, 2, 24)
         self.assertEqual(hour_calc.worked_hours, total)
 
 
-
-class TEST_Holidays(unittest.TestCase):
-    def setUp(self):
-        holiday = stdbygen.new_holiday([25, 26], 24)
-        week = stdbygen.new_week(["Mon", "Fri"], 15)
-        self.mock_person = stdbygen.Person(
-            "John Doe", [20, 30], [3, 2], holiday, week)
+class TEST_Holidays(MockTests):
 
     def test_is_on(self):
         self.assertTrue(self.mock_person.holiday.is_on(25))
@@ -114,13 +112,51 @@ class TEST_Holidays(unittest.TestCase):
         add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 20, 24)
         self.assertEqual(self.mock_person.holiday.worked_days(), 20)
 
-class TEST_Weeks(unittest.TestCase):
-    def setUp(self):
-        holiday = stdbygen.new_holiday([25, 26], 24)
-        week = stdbygen.new_week(["Mon", "Fri"], 15)
-        self.mock_person = stdbygen.Person(
-            "John Doe", [20, 30], [3, 2], holiday, week)
+class TEST_Weeks(MockTests):
 
     def test_is_restricted(self):
         self.assertTrue(self.mock_person.week.is_restricted("Fri"))
         self.assertFalse(self.mock_person.week.is_restricted("Thu"))
+
+    def test_add_worked_hours_week(self):
+        self.mock_person.week.worked_hours = 0
+        total = add_worked_hours_helper(self.mock_person.week.add_worked_hours, 2, 15)
+        self.assertEqual(self.mock_person.week.worked_hours, total)
+
+    def test_worked_days_week(self):
+        self.mock_person.week.worked_hours = 0
+        self.assertEqual(self.mock_person.week.worked_days(), 0)
+        add_worked_hours_helper(self.mock_person.week.add_worked_hours, 20, 15)
+        self.assertEqual(self.mock_person.week.worked_days(), 20)
+
+class TEST_Weekends(unittest.TestCase):
+    def setUp(self):
+        holiday = stdbygen.new_holiday([25, 26], 24)
+        weekend = stdbygen.new_weekend({"saturday": "John Doe", "sunday": "Jane Doe"}, 24)
+        week = stdbygen.new_week(["Mon", "Fri"], 15)
+        self.mock_person = [stdbygen.Person("John Doe", [20, 30], [3, 2], holiday, week, weekend),
+                            stdbygen.Person("Jane Doe", [20, 30], [3, 2], holiday, week, weekend)]
+
+    def test_add_worked_hours_weekend(self):
+        self.mock_person[0].weekend.worked_hours = 0
+        total = add_worked_hours_helper(self.mock_person[0].weekend.add_worked_hours, 2, 24)
+        self.assertEqual(self.mock_person[0].weekend.worked_hours, total)
+
+    def test_worked_days_weekend(self):
+        self.mock_person[0].weekend.worked_hours = 0
+        self.assertEqual(self.mock_person[0].weekend.worked_days(), 0)
+        add_worked_hours_helper(self.mock_person[0].weekend.add_worked_hours, 20, 15)
+        self.assertEqual(self.mock_person[0].weekend.worked_days(), 20)
+
+class Test_Person(MockTests):
+
+    def test_total_worked_days(self):
+        self.mock_person.holiday.worked_hours = 0
+        self.mock_person.week.worked_hours = 0
+        self.mock_person.weekend.worked_hours = 0
+        self.assertEqual(self.mock_person.worked_days(), 0)
+        add_worked_hours_helper(self.mock_person.holiday.add_worked_hours, 2, 24)
+        add_worked_hours_helper(
+            self.mock_person.week.add_worked_hours, 14, 15)
+        add_worked_hours_helper(self.mock_person.weekend.add_worked_hours, 4, 24)
+        self.assertEqual(self.mock_person.worked_days(), 20)
