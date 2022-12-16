@@ -66,26 +66,16 @@ class Weekends(Workday):
         self.hours = DefinedHours.weekend
 
     def is_on_first(self, weekday, onduty_person):
-        return self.first_weekend[weekday] == onduty_person
+        return self.first_weekend[weekday[:3]] == onduty_person
 
 class Person(Workday):
-    """
-    attributes:
-        name: str
-        required_days: list[int]
-        restricted_days: list[int]
-        restricted_weekdays: list[str]
-        holidays: list[int]
-        fisrt_weekend: dict
-    """
-
     def __init__(self, name: str, required_days: list[int],restricted_days: list[int],
-                 restricted_weekdays: list[str], holidays: list[int], fisrt_weekend: dict):
+                                     week: Weeks, weekend: Weekends, holiday: Holidays):
         super().__init__(required_days, restricted_days)
         self.name = name
-        self.holiday = Holidays(holidays)
-        self.week = Weeks(restricted_weekdays)
-        self.weekend = Weekends(fisrt_weekend)
+        self.holiday = holiday
+        self.week = week
+        self.weekend = weekend
 
     def worked_hours(self) -> int:
         return self.week.worked_hours + self.weekend.worked_hours + self.holiday.worked_hours
@@ -101,4 +91,24 @@ def set_defined_hours(yml_dict):
     DefinedHours.weekend  = yml_dict["hours"]["weekend"]
 
 
+def new_person(name: str, required_days: list[int], restricted_days: list[int],
+                      restricted_weekdays: list[str],holidays: list[int], first_weekend: dict) -> Person:
 
+    name = name.title()
+    week = Weeks([str(day[:3]).lower() for day in restricted_weekdays])
+    first_sat = str(first_weekend["saturday"]).title()
+    first_sun = str(first_weekend["sunday"]).title()
+    first_weekend = {"sat": first_sat, "sun": first_sun}
+    weekend = Weekends(first_weekend)
+    holiday = Holidays(holidays)
+
+    return Person(name=name, required_days=required_days,restricted_days=restricted_days,
+                 week=week, holiday=holiday, weekend=weekend)
+
+
+def person_list_from_yml(yml_dict) -> list[Person]:
+    set_defined_hours(yml_dict)
+    return [new_person(p["name"], p["required_days"],
+                      p["restricted_days"],
+                      p["restricted_weekdays"], p["holidays"],
+                      yml_dict["first_weekend"]) for p in yml_dict["person"]]
