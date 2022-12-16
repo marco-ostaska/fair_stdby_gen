@@ -47,7 +47,7 @@ YML_DICT = {
         },
         {
             "name": "Ana Doe",
-            "restricted_weekdays": [2,4],
+            "restricted_weekdays": ["mon","sat"],
             "restricted_days": [],
             "required_days": [],
             "holidays": []
@@ -76,13 +76,13 @@ class MockTests(unittest.TestCase):
 
     def setUp(self):
         stdbygen.set_defined_hours(YML_DICT)
-        self.mock_person = stdbygen.Person(
+        self.mock_person = stdbygen.new_person(
             name="John Doe",
             required_days=[20, 30],
             restricted_days=[3, 2],
             restricted_weekdays=["Mon", "Fri"],
             holidays=[25, 26],
-            fisrt_weekend={"saturday": "John Doe", "sunday": "Jane Doe"})
+            first_weekend={"saturday": "John Doe", "sunday": "Jane Doe"})
 
 class Test_WorkdayValidator(MockTests):
     def test_is_required(self):
@@ -107,9 +107,6 @@ class TEST_Holidays(MockTests):
     def test_is_on(self):
         self.assertTrue(self.mock_person.holiday.is_on(25))
         self.assertFalse(self.mock_person.holiday.is_on(27))
-
-    def add_worked_hours_holiday(self):
-        self.worked_hours += self.hours
 
     def test_add_worked_hours_holiday(self):
         self.mock_person.holiday.worked_hours = 0
@@ -180,3 +177,8 @@ class Test_Person(MockTests):
             self.mock_person.week.add_worked_hours, 14, 15)
         add_worked_hours_helper(self.mock_person.weekend.add_worked_hours, 4, 24)
         self.assertEqual(self.mock_person.worked_hours(), 354)
+
+class Test_person_list_from_yml(unittest.TestCase):
+    def test_person_list_from_yml(self):
+        person = stdbygen.person_list_from_yml(YML_DICT)
+        self.assertEqual(person[3].name, "Hugo Doe")
