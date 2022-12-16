@@ -8,13 +8,13 @@ class DefinedHours():
 
 
 class WeekDays(Enum):
-    SATURDAY = {"sat": 0, "saturday": 0}
-    SUNDAY = {"sun": 1, "sunday": 1}
-    MONDAY = {"mon": 2, "monday": 2}
-    TUESDAY = {"tue": 3, "tuesday": 3}
-    WEDNESDAY = {"wed": 4, "wednesday": 4}
-    THURSDAY = {"thu": 5, "thursday": 5}
-    FRIDAY = {"fri": 6, "friday": 6}
+    SATURDAY = {0:0, "sat": 0, "saturday": 0}
+    SUNDAY = {1:1, "sun": 1, "sunday": 1}
+    MONDAY = {2:2, "mon": 2, "monday": 2}
+    TUESDAY = {3:3, "tue": 3, "tuesday": 3}
+    WEDNESDAY = {4:4, "wed": 4, "wednesday": 4}
+    THURSDAY = {5:5, "thu": 5, "thursday": 5}
+    FRIDAY = {6:6, "fri": 6, "friday": 6}
 
 class WorkdayValidator:
     def __init__(self, required_days: list[int], restricted_days: list[int]):
