@@ -137,8 +137,6 @@ class TEST_Weeks(MockTests):
         self.assertEqual(self.mock_person.week.worked_days(), 20)
 
 class TEST_Weekends(MockTests):
-
-
     def test_add_worked_hours_weekend(self):
         self.mock_person.weekend.worked_hours = 0
         total = add_worked_hours_helper(self.mock_person.weekend.add_worked_hours, 2, 24)
@@ -182,3 +180,5 @@ class Test_person_list_from_yml(unittest.TestCase):
     def test_person_list_from_yml(self):
         person = stdbygen.person_list_from_yml(YML_DICT)
         self.assertEqual(person[3].name, "Hugo Doe")
+
+

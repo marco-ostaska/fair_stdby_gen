@@ -1,4 +1,7 @@
+import calendar
 from enum import Enum
+from monthinfo import monthinfo
+
 
 class DefinedHours():
     allowed = 0
@@ -16,6 +19,18 @@ class WeekDays(Enum):
     THURSDAY = {5:5, "thu": 5, "thursday": 5}
     FRIDAY = {6:6, "fri": 6, "friday": 6}
 
+
+class HoursCalculator:
+    worked_hours = 0
+    hours = 0
+
+    def __init__(self, allowed):
+        self.allowed = allowed
+
+    def add_worked_hours(self):
+        self.worked_hours += self.hours
+
+
 class WorkdayValidator:
     def __init__(self, required_days: list[int], restricted_days: list[int]):
         self.required_days = required_days
@@ -26,16 +41,6 @@ class WorkdayValidator:
 
     def is_restricted(self, day) -> bool:
         return day in self.restricted_days
-
-class HoursCalculator():
-    worked_hours = 0
-    hours = 0
-
-    def __init__(self, allowed):
-        self.allowed = allowed
-
-    def add_worked_hours(self):
-        self.worked_hours += self.hours
 
 class Workday(WorkdayValidator, HoursCalculator):
 
@@ -84,6 +89,7 @@ class Person(Workday):
         return self.week.worked_days() + self.weekend.worked_days() + self.holiday.worked_days()
 
 
+
 def set_defined_hours(yml_dict):
     DefinedHours.allowed = yml_dict["hours"]["allowed"]
     DefinedHours.holiday = yml_dict["hours"]["holiday"]
@@ -112,3 +118,20 @@ def person_list_from_yml(yml_dict) -> list[Person]:
                       p["restricted_days"],
                       p["restricted_weekdays"], p["holidays"],
                       yml_dict["first_weekend"]) for p in yml_dict["person"]]
+
+
+
+class Agenda():
+    def __init__(self, year, month, check: monthinfo.CurrentMonth,  people: list[Person]):
+        self.year = year
+        self.month = month
+        self.check = check
+        self.people = people
+
+
+    # fill required days
+
+def new_agenda_from_yml(yml_dict) -> Agenda:
+    month_info = monthinfo.CurrentMonth(yml_dict['month'], yml_dict['year'], calendar.SATURDAY)
+    people =  person_list_from_yml(yml_dict)
+    return Agenda(yml_dict['year'], yml_dict['month'],  month_info, people)
