@@ -122,11 +122,17 @@ def person_list_from_yml(yml_dict) -> list[Person]:
 
 
 class Agenda():
-    def __init__(self, year, month, check: monthinfo.CurrentMonth,  people: list[Person]):
-        self.year = year
-        self.month = month
-        self.check = check
+    def __init__(self,  current_month: monthinfo.CurrentMonth,  people: list[Person]):
+        self.current_month = current_month
         self.people = people
+        self.calendar = [[""]*7 for _ in range(self.current_month.number_of_days())]
+
+    # def set_first_saturday():
+
+        # def set_days_person_must_work(self, person):
+        # for day in self.list_of_days():
+        #     if person.has_to_work_today(day):
+        #         self.set_month_assigned_days(day, person)
 
 
     # fill required days
@@ -134,4 +140,4 @@ class Agenda():
 def new_agenda_from_yml(yml_dict) -> Agenda:
     month_info = monthinfo.CurrentMonth(yml_dict['month'], yml_dict['year'], calendar.SATURDAY)
     people =  person_list_from_yml(yml_dict)
-    return Agenda(yml_dict['year'], yml_dict['month'],  month_info, people)
+    return Agenda(month_info, people)

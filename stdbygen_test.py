@@ -182,3 +182,10 @@ class Test_person_list_from_yml(unittest.TestCase):
         self.assertEqual(person[3].name, "Hugo Doe")
 
 
+class Test_Agenda(MockTests):
+    def test_agenda_from_ym(self):
+        agenda = stdbygen.new_agenda_from_yml(YML_DICT)
+        self.assertEqual(agenda.current_month.month, 11)
+        self.assertEqual(agenda.current_month.calendar()[0][3], 1)
+        self.assertEqual(agenda.current_month.number_of_days(), 30)
+
