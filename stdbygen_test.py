@@ -130,6 +130,8 @@ class Test_WorkDayValidator(unittest.TestCase):
         self.assertTrue(self.validator.weekends.is_on_first(
             "saturday", "John Doe"))
         self.assertFalse(self.validator.weekends.is_on_first("saturday", "Joao"))
+        # self.assertTrue(self.validator.weekends.is_on_first(
+        #     "sunday", "John Doe"))
 
 
 class Test_Person(unittest.TestCase):
@@ -140,11 +142,13 @@ class Test_Person(unittest.TestCase):
 
         self.assertEqual(self.person[0].name, "John Doe")
 
+class Test_Agenda(unittest.TestCase):
+    def setUp(self) -> None:
+        self.person =stdbygen.new_person_list_from_yml(YML_DICT)
+        self.agenda = stdbygen.new_agenda_from_yml(YML_DICT)
 
-# class Test_Agenda(MockTests):
-#     def test_agenda_from_ym(self):
-#         agenda = stdbygen.new_agenda_from_yml(YML_DICT)
-#         self.assertEqual(agenda.current_month.month, 11)
-#         self.assertEqual(agenda.current_month.calendar()[0][3], 1)
-#         self.assertEqual(agenda.current_month.number_of_days(), 30)
-
+    def test_set_first_weekend(self):
+        self.agenda.set_first_weekend_day("saturday")
+        self.assertEqual(self.agenda.calendar[1][0], "John Doe")
+        self.agenda.set_first_weekend_day("sunday")
+        self.assertEqual(self.agenda.calendar[1][1], "Jane Doe")
