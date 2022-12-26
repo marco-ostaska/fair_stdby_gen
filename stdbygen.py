@@ -124,8 +124,14 @@ def new_person_list_from_yml(yml_dict: dict) -> list[Person]:
     return people_list
 
 
+
+
+def sort_list_index_by_hours(people: list[Person]):
+    sp = sorted(people, key=lambda person: person.worked_hours)
+    return [people.index(p) for p in sp]
+
 @dataclass()
-class AgendaSetter:
+class Agenda:
     person: list[Person]
     current_month: monthinfo.CurrentMonth
     calendar: Optional[list[list[str]]] = None
@@ -151,21 +157,8 @@ class AgendaSetter:
                 self.calendar[week][day] = p.name
 
 
-def sort_list_index_by_hours(people: list[Person]):
-    sp = sorted(people, key=lambda person: person.worked_hours)
-    return [people.index(p) for p in sp]
-
-@dataclass()
-class Agenda:
-    setter: AgendaSetter
-    calendar: Optional[list[list[str]]] = None
-
-    def update_calendar(self):
-        self.calendar = self.setter.calendar
-
-
 def new_agenda_from_yml(yml_dict) -> Agenda:
     month_info = monthinfo.new(year=yml_dict["year"], month=yml_dict["month"], first_week_day="Saturday")
     person =  new_person_list_from_yml(yml_dict)
-    agendaSetter = AgendaSetter(person=person, current_month=month_info)
-    return Agenda(setter=agendaSetter)
+    return Agenda(person=person, current_month=month_info)
+

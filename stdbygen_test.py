@@ -158,15 +158,14 @@ class Test_Agenda(unittest.TestCase):
         self.agenda = stdbygen.new_agenda_from_yml(YML_DICT)
 
     def test_set_first_weekend(self):
-        self.agenda.setter.set_first_weekend_day("saturday")
-        self.agenda.setter.set_first_weekend_day("sunday")
-        self.agenda.update_calendar()
+        self.agenda.set_first_weekend_day("saturday")
+        self.agenda.set_first_weekend_day("sunday")
+
 
         self.assertEqual(self.agenda.calendar[1][0], "John Doe")
         self.assertEqual(self.agenda.calendar[1][1], "Jane Doe")
 
     def test_set_required_days(self):
-        self.agenda.setter.set_required_days()
-        self.agenda.update_calendar()
-        self.assertEqual(self.agenda.setter.calendar[0][4], "John Doe")
+        self.agenda.set_required_days()
+        self.assertEqual(self.agenda.calendar[0][4], "John Doe")
 
