@@ -94,7 +94,7 @@ class Person:
 
 
 def process_name_and_weekend(name: str, first_weekend: dict) -> tuple:
-    return name.title(), {"saturday": str(first_weekend["saturday"]).title(), "sun": str(first_weekend["sunday"]).title()}
+    return name.title(), {"saturday": str(first_weekend["saturday"]).title(), "sunday": str(first_weekend["sunday"]).title()}
 
 
 def create_person_from_data(data: dict, defined_hours: PreDefinedHours, first_weekend: dict) -> Person:
@@ -124,16 +124,26 @@ def new_person_list_from_yml(yml_dict: dict) -> list[Person]:
     return people_list
 
 
+@dataclass()
+class Agenda:
+    person: list[Person]
+    current_month: monthinfo.CurrentMonth
+    calendar: Optional[list[list[str]]] = None
 
-# class Agenda():
-#     def __init__(self,  current_month: monthinfo.CurrentMonth,  people: list[Person]):
-#         self.current_month = current_month
-#         self.people = people
-#         self.calendar = [[""]*7 for _ in range(self.current_month.number_of_days())]
+    def __post_init__(self) -> None:
+        self.calendar = [[""]*7 for _ in range(self.current_month.get.number_of_days)]
+
+
+    def set_first_weekend_day(self, weekday: str):
+        for p in self.person:
+            if p.weekend.is_on_first(weekday, p.name):
+                first_saturday = self.current_month.get.list_of_weekday(weekday)[0]
+                week, day = self.current_month.get_calendar_indexes_for_this_day(first_saturday)
+                self.calendar[week][day] = p.name
 
 
 
-# def new_agenda_from_yml(yml_dict) -> Agenda:
-#     month_info = monthinfo.CurrentMonth(yml_dict['month'], yml_dict['year'], calendar.SATURDAY)
-#     people =  person_list_from_yml(yml_dict)
-#     return Agenda(month_info, people)
+def new_agenda_from_yml(yml_dict) -> Agenda:
+    month_info = monthinfo.new(year=yml_dict["year"], month=yml_dict["month"], first_week_day="Saturday")
+    person =  new_person_list_from_yml(yml_dict)
+    return Agenda(person=person, current_month=month_info)
