@@ -107,7 +107,7 @@ def create_person_from_data(data: dict, defined_hours: PreDefinedHours, first_we
     weekend = Weekends(first_weekend=first_weekend,
                        calc=WorkDayCalculator(defined_hours.weekend))
     validator = WorkdayValidator(
-        required_days=data["restricted_days"], restricted_days=data["restricted_days"], holidays=holidays, weekends=weekend)
+        required_days=data["required_days"], restricted_days=data["restricted_days"], holidays=holidays, weekends=weekend)
     return Person(name=name, validator=validator, week=week, weekend=weekend, holiday=holidays, defined_hours=defined_hours)
 
 
@@ -125,25 +125,47 @@ def new_person_list_from_yml(yml_dict: dict) -> list[Person]:
 
 
 @dataclass()
-class Agenda:
+class AgendaSetter:
     person: list[Person]
     current_month: monthinfo.CurrentMonth
     calendar: Optional[list[list[str]]] = None
 
     def __post_init__(self) -> None:
-        self.calendar = [[""]*7 for _ in range(self.current_month.get.number_of_days)]
-
+        self.calendar = [
+            [""]*7 for _ in range(self.current_month.get.number_of_days)]
 
     def set_first_weekend_day(self, weekday: str):
         for p in self.person:
             if p.weekend.is_on_first(weekday, p.name):
-                first_saturday = self.current_month.get.list_of_weekday(weekday)[0]
-                week, day = self.current_month.get_calendar_indexes_for_this_day(first_saturday)
+                first_saturday = self.current_month.get.list_of_weekday(weekday)[
+                    0]
+                week, day = self.current_month.get_calendar_indexes_for_this_day(
+                    first_saturday)
                 self.calendar[week][day] = p.name
 
+    def set_required_days(self):
+        for p in self.person:
+            for day in p.validator.required_days:
+                print(day, p.name)
+                week, day = self.current_month.get_calendar_indexes_for_this_day(day)
+                self.calendar[week][day] = p.name
+
+
+def sort_list_index_by_hours(people: list[Person]):
+    sp = sorted(people, key=lambda person: person.worked_hours)
+    return [people.index(p) for p in sp]
+
+@dataclass()
+class Agenda:
+    setter: AgendaSetter
+    calendar: Optional[list[list[str]]] = None
+
+    def update_calendar(self):
+        self.calendar = self.setter.calendar
 
 
 def new_agenda_from_yml(yml_dict) -> Agenda:
     month_info = monthinfo.new(year=yml_dict["year"], month=yml_dict["month"], first_week_day="Saturday")
     person =  new_person_list_from_yml(yml_dict)
-    return Agenda(person=person, current_month=month_info)
+    agendaSetter = AgendaSetter(person=person, current_month=month_info)
+    return Agenda(setter=agendaSetter)

@@ -35,7 +35,7 @@ YML_DICT = {
             "name": "Mark Doe",
             "restricted_weekdays": [],
             "restricted_days": [],
-            "required_days": [2],
+            "required_days": [20],
             "holidays": []
         },
         {
@@ -130,8 +130,7 @@ class Test_WorkDayValidator(unittest.TestCase):
         self.assertTrue(self.validator.weekends.is_on_first(
             "saturday", "John Doe"))
         self.assertFalse(self.validator.weekends.is_on_first("saturday", "Joao"))
-        # self.assertTrue(self.validator.weekends.is_on_first(
-        #     "sunday", "John Doe"))
+
 
 
 class Test_Person(unittest.TestCase):
@@ -142,13 +141,32 @@ class Test_Person(unittest.TestCase):
 
         self.assertEqual(self.person[0].name, "John Doe")
 
+    def test_sort_list_index_by_hours(self):
+        # Create a list of Person objects with different worked hours
+        self.person[0].worked_hours=10
+        self.person[1].worked_hours=20
+        self.person[2].worked_hours=5
+        self.person[3].worked_hours=15
+        self.person[4].worked_hours=15
+
+        # Check that the function returns the correct indices
+        self.assertEqual(stdbygen.sort_list_index_by_hours(self.person), [2, 0, 3, 4, 1])
+
 class Test_Agenda(unittest.TestCase):
     def setUp(self) -> None:
         self.person =stdbygen.new_person_list_from_yml(YML_DICT)
         self.agenda = stdbygen.new_agenda_from_yml(YML_DICT)
 
     def test_set_first_weekend(self):
-        self.agenda.set_first_weekend_day("saturday")
+        self.agenda.setter.set_first_weekend_day("saturday")
+        self.agenda.setter.set_first_weekend_day("sunday")
+        self.agenda.update_calendar()
+
         self.assertEqual(self.agenda.calendar[1][0], "John Doe")
-        self.agenda.set_first_weekend_day("sunday")
         self.assertEqual(self.agenda.calendar[1][1], "Jane Doe")
+
+    def test_set_required_days(self):
+        self.agenda.setter.set_required_days()
+        self.agenda.update_calendar()
+        self.assertEqual(self.agenda.setter.calendar[0][4], "John Doe")
+
