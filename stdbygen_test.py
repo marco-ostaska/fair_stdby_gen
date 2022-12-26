@@ -74,7 +74,9 @@ def add_worked_hours_helper(func, days, hours_to_sum):
 
 class Test_WorkDayCalculator(unittest.TestCase):
     def setUp(self) -> None:
-        pre_defined_hours = stdbygen.PreDefinedHours(allowed=186,week=15,weekend=24,holiday=24)
+        pd_hours = stdbygen.PreDefinedHours(allowed=186,week=15,weekend=24,holiday=24)
+        self.holidays = stdbygen.Holidays(days=[25,30], calc=pd_hours)
+        self.weekends = stdbygen.Weekends(first_weekend=YML_DICT["first_weekend"],  calc=pd_hours)
         self.calculator = stdbygen.WorkDayCalculator(15)
 
 
@@ -82,10 +84,52 @@ class Test_WorkDayCalculator(unittest.TestCase):
         total = add_worked_hours_helper(self.calculator.add_worked_hours, 2, 15)
         self.assertEqual(self.calculator.worked_hours, total)
 
-    def test_worked_days_holiday(self):
+    def test_worked_days(self):
         self.assertEqual(self.calculator.worked_days, 0)
         add_worked_hours_helper(self.calculator.add_worked_hours, 20, 15)
         self.assertEqual(self.calculator.worked_days, 20)
+
+class Test_holidays(unittest.TestCase):
+    def setUp(self) -> None:
+        calc = stdbygen.WorkDayCalculator(hours_to_compute=24)
+        self.holidays = stdbygen.Holidays(days=[25,30], calc=calc)
+        self.weekends = stdbygen.Weekends(first_weekend=YML_DICT["first_weekend"],  calc=calc)
+        self.calculator = stdbygen.WorkDayCalculator(15)
+
+    def test_add_worked_hours(self):
+        total = add_worked_hours_helper(self.holidays.calc.add_worked_hours, 2, 24)
+        self.assertEqual(self.holidays.calc.worked_hours, total)
+
+    def test_worked_days_holiday(self):
+        self.assertEqual(self.holidays.calc.worked_days, 0)
+        add_worked_hours_helper(self.holidays.calc.add_worked_hours, 20, 24)
+        self.assertEqual(self.holidays.calc.worked_days, 20)
+
+
+class Test_WorkDayValidator(unittest.TestCase):
+    def setUp(self) -> None:
+        pd_hours = stdbygen.PreDefinedHours(allowed=186,week=15,weekend=24,holiday=24)
+        holidays = stdbygen.Holidays(days=[25,30], calc=pd_hours)
+        weekends = stdbygen.Weekends(first_weekend=YML_DICT["first_weekend"],  calc=pd_hours)
+        self.validator = stdbygen.WorkdayValidator(restricted_days=[2,30],
+                                                    required_days=[4,8], holidays=holidays,
+                                                    weekends=weekends)
+    def test_is_required(self):
+        self.assertTrue(self.validator.is_required(4))
+        self.assertFalse(self.validator.is_required(2))
+
+    def test_is_restricted(self):
+        self.assertTrue(self.validator.is_restricted(2))
+        self.assertFalse(self.validator.is_restricted(4))
+
+    def test_is_holiday(self):
+        self.assertTrue(self.validator.is_holiday(25))
+        self.assertFalse(self.validator.is_holiday(1))
+
+    def test_is_on_first_weekend(self):
+        self.assertTrue(self.validator.weekends.is_on_first(
+            "saturday", "John Doe"))
+        self.assertFalse(self.validator.weekends.is_on_first("saturday", "Joao"))
 
 
     # @property
@@ -104,22 +148,8 @@ class Test_WorkDayCalculator(unittest.TestCase):
 #             holidays=[25, 26],
 #             first_weekend={"saturday": "John Doe", "sunday": "Jane Doe"})
 
-# class Test_WorkdayValidator(MockTests):
-#     def test_is_required(self):
-#         self.assertTrue(self.mock_person.is_required(20))
-#         self.assertFalse(self.mock_person.is_required(25))
 
-#     def test_is_restricted(self):
-#         self.assertTrue(self.mock_person.is_restricted(3))
-#         self.assertFalse(self.mock_person.is_restricted(4))
 
-# class TEST_HoursCalculator(unittest.TestCase):
-
-#     def test_add_worked_hours(self):
-#         hour_calc = stdbygen.HoursCalculator(186)
-#         hour_calc.hours = 24
-#         total = add_worked_hours_helper(hour_calc.add_worked_hours, 2, 24)
-#         self.assertEqual(hour_calc.worked_hours, total)
 
 
 # class TEST_Holidays(MockTests):

@@ -11,17 +11,6 @@ class PreDefinedHours:
     weekend: int
     holiday: int
 
-@dataclass()
-class Holidays:
-    days: int
-
-@dataclass()
-class WorkDaySetter:
-    pass
-
-@dataclass()
-class WorkDayGetter:
-    pass
 
 @dataclass()
 class WorkDayCalculator(object):
@@ -36,12 +25,40 @@ class WorkDayCalculator(object):
     def worked_days(self) -> int:
         return self.worked_hours / self.hours_to_compute
 
+@dataclass()
+class Holidays:
+    days: int
+    calc: WorkDayCalculator
+
+@dataclass()
+class WorkDaySetter:
+    pass
+
+@dataclass()
+class WorkDayGetter:
+    pass
+
+
+@dataclass()
+class Weekends:
+    first_weekend: dict
+    calc: WorkDayCalculator
+
+    def is_on_first(self, weekday:str, onduty_person:str) -> bool:
+        return self.first_weekend[weekday.lower()] == onduty_person
+
+@dataclass()
+class Weeks:
+    calc: WorkDayCalculator
+
 
 @dataclass()
 class WorkdayValidator:
     required_days: list[int]
     restricted_days: list[int]
     holidays: Holidays
+    weekends: Weekends
+
 
     def is_required(self, day) -> bool:
         return day in self.required_days
@@ -56,23 +73,6 @@ class WorkdayValidator:
 
 
 
-# class Weeks(Workday):
-
-#     def __init__(self, restricted_weekdays):
-#         self.restricted_weekdays = restricted_weekdays
-#         self.hours = DefinedHours.week
-
-#     def is_restricted(self, week_day) -> bool:
-#         return week_day[:3].lower() in [day[:3].lower() for day in self.restricted_weekdays]
-
-# class Weekends(Workday):
-
-#     def __init__(self, first_weekend):
-#         self.first_weekend = first_weekend
-#         self.hours = DefinedHours.weekend
-
-#     def is_on_first(self, weekday, onduty_person) -> bool:
-#         return self.first_weekend[weekday[:3]] == onduty_person
 
 # class Person(Workday):
 #     def __init__(self, name: str, required_days: list[int],restricted_days: list[int],
