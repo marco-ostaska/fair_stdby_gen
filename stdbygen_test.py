@@ -1,3 +1,4 @@
+from tkinter import Y
 import unittest
 import stdbygen
 
@@ -59,17 +60,6 @@ YML_DICT = {
 def add_worked_hours_helper(func, days, hours_to_sum):
     [func() for _ in range(days)]
     return len(range(days)) * hours_to_sum
-
-
-# class Test_PreDefinedHours(unittest.TestCase):
-#     def setUp(self) -> None:
-#         pre_defined_hours = stdbygen.PreDefinedHours(allowed=186,week=15,weekend=24,holiday=24)
-
-#     def test_set_PreDefinedHours(self):
-#         self.assertEqual(stdbygen.DefinedHours.allowed, 186)
-#         self.assertEqual(stdbygen.DefinedHours.week, 15)
-
-
 
 
 class Test_WorkDayCalculator(unittest.TestCase):
@@ -178,3 +168,7 @@ class Test_Agenda(unittest.TestCase):
         for i, j in idx:
             self.assertEqual(self.agenda.calendar[i][j], 'John Doe')
 
+class Test_Process(unittest.TestCase):
+    def test_process(self):
+        stdbygen.process(YML_DICT)
+        self.assertEqual(0,1)

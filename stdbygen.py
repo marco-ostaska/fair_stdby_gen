@@ -31,15 +31,6 @@ class Holidays:
     days: int
     calc: WorkDayCalculator
 
-# @dataclass()
-# class WorkDaySetter:
-#     pass
-
-# @dataclass()
-# class WorkDayGetter:
-#     pass
-
-
 @dataclass()
 class Weekends:
     first_weekend: dict
@@ -125,9 +116,6 @@ def new_person_list_from_yml(yml_dict: dict) -> list[Person]:
     return people_list
 
 
-def sort_list_index_by_hours(people: list[Person]):
-    sp = sorted(people, key=lambda person: person.worked_hours)
-    return [people.index(p) for p in sp]
 
 
 @dataclass()
@@ -183,6 +171,7 @@ class Agenda:
             p.holiday.calc.worked_hours =0
             p.week.calc.worked_hours =0
             p.weekend.calc.worked_hours = 0
+            p.worked_hours = 0
 
             for _ in self.get_list_of_worked_holiday_days(p):
                 p.holiday.calc.add_worked_hours()
@@ -196,6 +185,31 @@ class Agenda:
             p.add_worked_hours()
 
 
+@dataclass()
+class SaturdayRules:
+    agenda: Agenda
+
+    def last_worked(self, person: Person) -> int:
+        saturdays = self.agenda.current_month.get.list_of_weekday("saturday")
+        for s in reversed(saturdays):
+            i,j = self.agenda.current_month.get_calendar_indexes_for_this_day(s)
+            if self.agenda.calendar[i][j] == person.name:
+                return s
+
+        return 0
+
+@dataclass()
+class WeekRules:
+    agenda: Agenda
+
+    def last_worked(self, weekday: str, person: str) -> int:
+        last = self.agenda.current_month.get.list_of_weekday(weekday)
+        for l in reversed(last):
+            i,j = self.agenda.current_month.get_calendar_indexes_for_this_day(l)
+            if self.agenda.calendar[i][j] == person:
+                return l
+
+        return 0
 
 
 def new_agenda_from_yml(yml_dict) -> Agenda:
@@ -203,3 +217,68 @@ def new_agenda_from_yml(yml_dict) -> Agenda:
     person =  new_person_list_from_yml(yml_dict)
     return Agenda(person=person, current_month=month_info)
 
+
+def sort_list_index_by_hours(people: list[Person]):
+    sp = sorted(people, key=lambda person: person.worked_hours)
+    return [people.index(p) for p in sp]
+
+
+def process(yml):
+    agenda = new_agenda_from_yml(yml)
+
+    agenda.set_first_weekend_day("saturday")
+    agenda.set_first_weekend_day("sunday")
+    agenda.set_required_days()
+    agenda.update_worked_hours()
+
+    for day in agenda.current_month.get.list_of_days:
+        i, j = agenda.current_month.get_calendar_indexes_for_this_day(day)
+        weekday = calendar.day_name[calendar.weekday(agenda.current_month.year, agenda.current_month.month, day)]
+        if agenda.calendar[i][j] != "":
+             print(day, weekday, agenda.calendar[i][j])
+        if agenda.calendar[i][j] == "":
+
+            ###########################################################
+            # saturday
+            ###########################################################
+            if weekday == "Saturday":
+                for ix in sort_list_index_by_hours(agenda.person):
+                    week_rule = WeekRules(agenda)
+                    last_saturday = week_rule.last_worked("saturday", agenda.person[ix].name)
+                    last_sunday = week_rule.last_worked("sunday", agenda.person[ix].name)
+
+                    # check if has worked on last weekend
+                    if (day - last_saturday) > 14 and (day - last_sunday) > 13:
+                        agenda.calendar[i][j] = agenda.person[ix].name
+                        agenda.update_worked_hours()
+                        print(day, weekday, agenda.person[ix].name, agenda.person[ix].worked_hours, "last:", last_saturday, last_sunday )
+                        break
+
+            ###########################################################
+            # sunday
+            ###########################################################
+
+
+            if weekday == "Sunday":
+                for ix in sort_list_index_by_hours(agenda.person):
+                    lsi, lsj = agenda.current_month.get_calendar_indexes_for_this_day(
+                        day - 8)
+                    lsd, lss = agenda.current_month.get_calendar_indexes_for_this_day(
+                        day - 7)
+                    lsy, lzt  = agenda.current_month.get_calendar_indexes_for_this_day(
+                        day - 1)
+
+                    # check if has worked on last weekend
+                    if agenda.calendar[lsi][lsj] != agenda.person[ix].name and agenda.calendar[lsd][lss] != agenda.person[ix].name and agenda.calendar[lsy][lzt] != agenda.person[ix].name:
+                        agenda.calendar[i][j] = agenda.person[ix].name
+                        agenda.update_worked_hours()
+                        print(
+                            day, weekday, agenda.person[ix].name, agenda.person[ix].worked_hours, agenda.person[ix].worked_days)
+                        break
+
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
