@@ -19,7 +19,7 @@ class WorkDayCalculator(object):
     hours_to_compute: int
     worked_hours: int = 0
 
-    def add_worked_hours(self) -> int:
+    def add_worked_hours(self) -> None:
         self.worked_hours += self.hours_to_compute
 
     @property
@@ -57,6 +57,7 @@ class Weeks:
         return weekday.lower()[:3] in [str(day[:3]).lower() for day in self.restricted_days]
 
 
+
 @dataclass()
 class WorkdayValidator:
     required_days: list[int]
@@ -74,7 +75,6 @@ class WorkdayValidator:
     def is_holiday(self, day: int) -> bool:
         return day in self.holidays.days
 
-
 @dataclass()
 class Person:
     name: str
@@ -85,8 +85,9 @@ class Person:
     defined_hours: PreDefinedHours
     worked_hours: int = 0
 
-    def add_worked_hours(self) -> int:
-       return self.week.calc.worked_hours + self.weekend.calc.worked_hours + self.holiday.calc.worked_hours
+
+    def add_worked_hours(self) -> None:
+       self.worked_hours += self.week.calc.worked_hours + self.weekend.calc.worked_hours + self.holiday.calc.worked_hours
 
     @property
     def worked_days(self) -> int:
@@ -124,11 +125,10 @@ def new_person_list_from_yml(yml_dict: dict) -> list[Person]:
     return people_list
 
 
-
-
 def sort_list_index_by_hours(people: list[Person]):
     sp = sorted(people, key=lambda person: person.worked_hours)
     return [people.index(p) for p in sp]
+
 
 @dataclass()
 class Agenda:
@@ -152,9 +152,50 @@ class Agenda:
     def set_required_days(self):
         for p in self.person:
             for day in p.validator.required_days:
-                print(day, p.name)
                 week, day = self.current_month.get_calendar_indexes_for_this_day(day)
                 self.calendar[week][day] = p.name
+
+    def get_calendar_idx_for_person(self, name: str):
+        indexes = []
+        for i in range(len(self.calendar)):
+            indexes.extend((i, j) for j in range(len(self.calendar[i])) if self.calendar[i][j] == name)
+        return indexes
+
+    def get_list_of_worked_holiday_days(self, person: Person) -> list[int]:
+        idx = self.get_calendar_idx_for_person(person.name)
+        return [self.current_month.calendar[i][j] for i, j in idx if person.validator.is_holiday(self.current_month.calendar[i][j])]
+
+    def get_list_of_worked_weekend_days(self, person: Person) -> list[int]:
+        idx = self.get_calendar_idx_for_person(person.name)
+        return [self.current_month.calendar[i][j] for i, j in idx if self.current_month.validate.is_weekend(self.current_month.calendar[i][j])]
+
+    def get_list_of_worked_week_days(self, person: Person) -> list[int]:
+        idx = self.get_calendar_idx_for_person(person.name)
+        return [
+            self.current_month.calendar[i][j]
+            for i, j in idx
+            if not self.current_month.validate.is_weekend(self.current_month.calendar[i][j])
+            and not person.validator.is_holiday(self.current_month.calendar[i][j])
+        ]
+
+    def update_worked_hours(self):
+        for p in self.person:
+            p.holiday.calc.worked_hours =0
+            p.week.calc.worked_hours =0
+            p.weekend.calc.worked_hours = 0
+
+            for _ in self.get_list_of_worked_holiday_days(p):
+                p.holiday.calc.add_worked_hours()
+
+            for _ in self.get_list_of_worked_weekend_days(p):
+                p.weekend.calc.add_worked_hours()
+
+            for _ in self.get_list_of_worked_week_days(p):
+                p.week.calc.add_worked_hours()
+
+            p.add_worked_hours()
+
+
 
 
 def new_agenda_from_yml(yml_dict) -> Agenda:

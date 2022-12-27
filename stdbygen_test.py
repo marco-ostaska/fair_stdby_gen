@@ -21,7 +21,7 @@ YML_DICT = {
             "name": "John Doe",
             "restricted_weekdays": ["Mon", "Wed", "Fri"],
             "restricted_days": [5, 17],
-            "required_days": [2],
+            "required_days": [2, 25],
             "holidays": [25, 1]
         },
         {
@@ -156,16 +156,25 @@ class Test_Agenda(unittest.TestCase):
     def setUp(self) -> None:
         self.person =stdbygen.new_person_list_from_yml(YML_DICT)
         self.agenda = stdbygen.new_agenda_from_yml(YML_DICT)
-
-    def test_set_first_weekend(self):
         self.agenda.set_first_weekend_day("saturday")
         self.agenda.set_first_weekend_day("sunday")
+        self.agenda.set_required_days()
 
-
+    def test_set_first_weekend(self):
         self.assertEqual(self.agenda.calendar[1][0], "John Doe")
         self.assertEqual(self.agenda.calendar[1][1], "Jane Doe")
 
     def test_set_required_days(self):
         self.agenda.set_required_days()
         self.assertEqual(self.agenda.calendar[0][4], "John Doe")
+
+    def test_update_worked_hours(self):
+        self.agenda.update_worked_hours()
+        self.assertEqual(self.agenda.person[0].worked_hours, 63)
+
+    def test_get_calendar_idx_for_person(self):
+        idx =  self.agenda.get_calendar_idx_for_person("John Doe")
+        self.assertEqual(idx, [(0, 4), (1, 0), (3, 6)])
+        for i, j in idx:
+            self.assertEqual(self.agenda.calendar[i][j], 'John Doe')
 
